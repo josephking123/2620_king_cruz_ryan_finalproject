@@ -10,11 +10,9 @@ public class MainMenu extends JFrame{
 
     public MainMenu(){
         initComponents();
-
     }
 
     public void run(){
-                new MainMenu().setVisible(true);
+        new MainMenu().setVisible(true);
     }
-    
 }
