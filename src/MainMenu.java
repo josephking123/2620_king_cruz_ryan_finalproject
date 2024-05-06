@@ -23,7 +23,7 @@ public class MainMenu extends JFrame{
 
         JPanel buttonPanel = new JPanel(new GridLayout(4, 1, 10, 10));
 
-        mode1Button = new JButton("Mode 1");
+        mode1Button = new JButton("Classic");
         mode2Button = new JButton("Mode 2");
         mode3Button = new JButton("Mode 3");
         leaderboardButton = new JButton("Leaderboard");
@@ -32,7 +32,7 @@ public class MainMenu extends JFrame{
 
         mode1Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle mode 1 action
+                MainMode normalPong = new MainMode();
             }
         });
 
@@ -64,7 +64,7 @@ public class MainMenu extends JFrame{
         rulesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Handle rules action
-                JOptionPane.showMessageDialog(MainMenu.this, "Rules: ...", "Game Rules", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(MainMenu.this, "Classic: Classic pong. Players volley the ball back and forth, with the ball moving faster after every return. A player wins when they score 7 points.", "Game Rules", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
@@ -91,5 +91,4 @@ public class MainMenu extends JFrame{
             }
         });
     }
-    
 }

@@ -4,8 +4,8 @@ import java.util.*;
 public class Ball extends Rectangle{
 
 	Random random;
-	int x;
-	int y;
+	int xV;
+	int yV;
 	int initialSpeed = 2;
 	
 	Ball(int x, int y, int width, int height){
@@ -24,14 +24,14 @@ public class Ball extends Rectangle{
 	}
 	
 	public void setXDirection(int randomXDirection) {
-		x = randomXDirection;
+		xV = randomXDirection;
 	}
 	public void setYDirection(int randomYDirection) {
-		y = randomYDirection;
+		yV = randomYDirection;
 	}
 	public void move() {
-		x += x;
-		y += y;
+		x += xV;
+		y += yV;
 	}
 	public void draw(Graphics g) {
 		g.setColor(Color.white);
