@@ -32,7 +32,7 @@ public class MainMenu extends JFrame{
 
         mode1Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                MainMode normalPong = new MainMode();
+                Classic classicPong = new Classic();
             }
         });
 
