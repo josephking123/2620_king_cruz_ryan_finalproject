@@ -24,8 +24,8 @@ public class MainMenu extends JFrame{
         JPanel buttonPanel = new JPanel(new GridLayout(4, 1, 10, 10));
 
         mode1Button = new JButton("Classic");
-        mode2Button = new JButton("Mode 2");
-        mode3Button = new JButton("Mode 3");
+        mode2Button = new JButton("Rally");
+        mode3Button = new JButton("Castle Defense");
         leaderboardButton = new JButton("Leaderboard");
         exitButton = new JButton("Exit");
         rulesButton = new JButton("Rules");
@@ -38,13 +38,13 @@ public class MainMenu extends JFrame{
 
         mode2Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle mode 2 action
+                RallyMode rallyPong = new RallyMode();
             }
         });
 
         mode3Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle mode 3 action
+                CastleDefenseMode castlePong = new CastleDefenseMode();
             }
         });
 
@@ -64,7 +64,7 @@ public class MainMenu extends JFrame{
         rulesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Handle rules action
-                JOptionPane.showMessageDialog(MainMenu.this, "Classic: Classic pong. Players volley the ball back and forth, with the ball moving faster after every return. A player wins when they score 7 points.", "Game Rules", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(MainMenu.this, "Classic: Classic pong. Players volley the ball back and forth, with the ball moving faster after every return. A player wins when they score 7 points.\n Rally: Rally pong.  Get the highest score by rallying between you and your opponent.\n Castle Defense: Defend your Castle!  Each brick can take one hit, but once the ball hits your edge it's game over.", "Game Rules", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
