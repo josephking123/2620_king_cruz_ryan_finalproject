@@ -37,13 +37,13 @@ public class MainMenu extends JFrame{
 
         mode1Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Classic classicPong = new Classic();
+                Classic classicPong = new Classic(leaderboard);
             }
         });
 
         mode2Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                RallyMode rallyPong = new RallyMode();
+                RallyMode rallyPong = new RallyMode(leaderboard);
             }
         });
 
@@ -90,6 +90,10 @@ public class MainMenu extends JFrame{
         add(mainPanel);
     }
 
+    public Leaderboard getLeaderboard() {
+        return leaderboard;
+    }
+    
     private void showLeaderboard() {
         HashMap<String, Integer> highScores = leaderboard.getAllHighScores();
         StringBuilder leaderboardText = new StringBuilder("Leaderboard:\n");

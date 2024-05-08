@@ -29,8 +29,8 @@ public class Classic extends JFrame {
     Clip scoreSound;
     Clip winSound;
 
-    Classic (){
-        leaderboard = new Leaderboard();
+    Classic (Leaderboard leaderboard){
+        
         panel = new GamePanel(); // Pass the main menu instance to the game panel
         this.add(panel);
         this.setTitle("Pong Game");
@@ -40,6 +40,7 @@ public class Classic extends JFrame {
         this.pack();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
+        this.leaderboard = leaderboard;
 
         // Load sound files
         try {
@@ -84,6 +85,11 @@ public class Classic extends JFrame {
         if (score.player1 >= WINNING_SCORE || score.player2 >= WINNING_SCORE) {
             String winner = (score.player1 >= WINNING_SCORE) ? "Player 1" : "Player 2";
             playWinSound();
+
+            int highScore = Math.max(score.player1, score.player2); // Determine high score
+            // Update leaderboard with high score
+            leaderboard.updateHighScore("Classic", highScore);
+
             int choice = JOptionPane.showConfirmDialog(panel, winner + " wins!\n\nDo you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (choice == JOptionPane.YES_OPTION) {
                 // Restart the game
@@ -96,7 +102,6 @@ public class Classic extends JFrame {
                 running = false;
                 dispose();
             }
-            leaderboard.updateHighScore("Classic", Math.max(score.player1, score.player2));
         }
     }
 

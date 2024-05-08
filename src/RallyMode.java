@@ -25,8 +25,9 @@ public class RallyMode extends JFrame implements Runnable{
     GamePanel panel;
     int rallyScore = 0;
     MainMenu mainMenu; // Reference to the main menu
+    private Leaderboard leaderboard;
 
-    RallyMode(){
+    RallyMode(Leaderboard leaderboard){
         mainMenu = new MainMenu(); // Create a new instance of the main menu
         panel = new GamePanel(mainMenu); // Pass the main menu instance to the game panel
 
@@ -38,11 +39,10 @@ public class RallyMode extends JFrame implements Runnable{
         this.pack();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
+        this.leaderboard = leaderboard;
     }
 
-    public static void main(String[] args) {
-        new RallyMode();
-    }
+    
 
     public void run() {
         //game loop
@@ -171,7 +171,7 @@ public class RallyMode extends JFrame implements Runnable{
     }
 
     public void finish(){
-        
+        leaderboard.updateHighScore("Rally", rallyScore);
         int choice = JOptionPane.showConfirmDialog(panel, "Final Score: " + rallyScore + " \n\nDo you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (choice == JOptionPane.YES_OPTION) {
             // Restart the game
