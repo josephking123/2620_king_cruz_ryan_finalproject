@@ -10,7 +10,6 @@ public class MainMenu extends JFrame{
     private JPanel mainPanel;
     private Leaderboard leaderboard;
 
-    private Client client;
 
     public MainMenu() {
         setTitle("Ping Pong Game");
@@ -99,11 +98,5 @@ public class MainMenu extends JFrame{
         }
         JOptionPane.showMessageDialog(MainMenu.this, leaderboardText.toString(), "Leaderboard", JOptionPane.INFORMATION_MESSAGE);
     }
-        public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new MainMenu().setVisible(true);
-            }
-        });
-    }
+       
 }
