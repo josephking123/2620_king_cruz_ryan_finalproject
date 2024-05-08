@@ -6,7 +6,7 @@ import java.util.Random;
 import javax.sound.sampled.*;
 import javax.swing.*;
 
-public class Classic extends JFrame implements Runnable {
+public class Classic extends JFrame {
 
     static final int GAME_WIDTH = 1000;
     static final int GAME_HEIGHT = (int)(GAME_WIDTH * (0.5555));
@@ -15,25 +15,21 @@ public class Classic extends JFrame implements Runnable {
     static final int PADDLE_WIDTH = 25;
     static final int PADDLE_HEIGHT = 100;
     static final int WINNING_SCORE = 7; // Define the winning score
-    Thread gameThread;
-    Image image;
-    Graphics graphics;
+    
     Random random;
     Paddle paddle1;
     Paddle paddle2;
     Ball ball;
     Score score;
     GamePanel panel;
-    MainMenu mainMenu; // Reference to the main menu
+    boolean running = true;
 
     Clip paddleHitSound;
     Clip scoreSound;
     Clip winSound;
 
     Classic (){
-
-        mainMenu = new MainMenu(); // Create a new instance of the main menu
-        panel = new GamePanel(mainMenu); // Pass the main menu instance to the game panel
+        panel = new GamePanel(); // Pass the main menu instance to the game panel
         this.add(panel);
         this.setTitle("Pong Game");
         this.setResizable(false);
@@ -59,24 +55,44 @@ public class Classic extends JFrame implements Runnable {
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
+
+        // Start game thread
+        Thread gameThread = new Thread(new GameLoop());
+        gameThread.start();
     }
 
-    public void run() {
-        //game loop
-        long lastTime = System.nanoTime();
-        double amountOfTicks =60.0;
-        double ns = 1000000000 / amountOfTicks;
-        double delta = 0;
-        while(true) {
-            long now = System.nanoTime();
-            delta += (now -lastTime)/ns;
-            lastTime = now;
-            if(delta >=1) {
+    class GameLoop implements Runnable {
+        public void run() {
+            // Game loop
+            while (running) { // Check the running flag
                 move();
                 checkCollision();
                 checkWinner(); // Check for winner after each move
                 panel.repaint();
-                delta--;
+                try {
+                    Thread.sleep(16); // Cap the frame rate to approximately 60 fps
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void checkWinner() {
+        if (score.player1 >= WINNING_SCORE || score.player2 >= WINNING_SCORE) {
+            String winner = (score.player1 >= WINNING_SCORE) ? "Player 1" : "Player 2";
+            playWinSound();
+            int choice = JOptionPane.showConfirmDialog(panel, winner + " wins!\n\nDo you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (choice == JOptionPane.YES_OPTION) {
+                // Restart the game
+                score.player1 = 0;
+                score.player2 = 0;
+                newPaddles();
+                newBall();
+            } else {
+                // Stop the game loop and go back to the main menu
+                running = false;
+                dispose();
             }
         }
     }
@@ -91,13 +107,9 @@ public class Classic extends JFrame implements Runnable {
         paddle2 = new Paddle(GAME_WIDTH-PADDLE_WIDTH,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
     }
 
-    public class GamePanel extends JPanel {
+    class GamePanel extends JPanel {
 
-        @SuppressWarnings("unused")
-        private MainMenu mainMenu; // Reference to the main menu
-
-        GamePanel(MainMenu mainMenu){
-            this.mainMenu = mainMenu; // Save reference to the main menu
+        GamePanel(){
             newPaddles();
             newBall();
             score = new Score(GAME_WIDTH,GAME_HEIGHT);
@@ -105,9 +117,6 @@ public class Classic extends JFrame implements Runnable {
             this.addKeyListener(new ActionListener());
             this.setPreferredSize(SCREEN_SIZE);
             this.setBackground(Color.BLACK); // Set background color of JPanel to black
-
-            gameThread = new Thread(Classic.this);
-            gameThread.start();
         }
 
         public void paintComponent(Graphics g) {
@@ -150,7 +159,7 @@ public class Classic extends JFrame implements Runnable {
                 ball.yV--;
             ball.setXDirection(ball.xV);
             ball.setYDirection(ball.yV);
-            playPaddleHitSound(); // Play paddle hit sound
+            playPaddleHitSound(); //Plays paddle hit sound
         }
         if(ball.intersects(paddle2)) {
             ball.xV = Math.abs(ball.xV);
@@ -161,7 +170,7 @@ public class Classic extends JFrame implements Runnable {
                 ball.yV--;
             ball.setXDirection(-ball.xV);
             ball.setYDirection(ball.yV);
-            playPaddleHitSound(); // Play paddle hit sound
+            playPaddleHitSound(); //Plays paddle hit sound
         }
         //stops paddles at window edges
         if(paddle1.y<=0)
@@ -172,7 +181,7 @@ public class Classic extends JFrame implements Runnable {
             paddle2.y=0;
         if(paddle2.y >= (GAME_HEIGHT-PADDLE_HEIGHT))
             paddle2.y = GAME_HEIGHT-PADDLE_HEIGHT;
-        //give a player 1 point and creates new paddles & ball
+        //gives a player 1 point and creates new paddles & ball
         if(ball.x <=0) {
             score.player2++;
             newPaddles();
@@ -189,33 +198,7 @@ public class Classic extends JFrame implements Runnable {
         }
     }
 
-    public void checkWinner() {
-        if (score.player1 >= WINNING_SCORE || score.player2 >= WINNING_SCORE) {
-            String winner = (score.player1 >= WINNING_SCORE) ? "Player 1" : "Player 2";
-            playWinSound();
-            int choice = JOptionPane.showConfirmDialog(panel, winner + " wins!\n\nDo you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (choice == JOptionPane.YES_OPTION) {
-                // Restart the game
-                score.player1 = 0;
-                score.player2 = 0;
-                newPaddles();
-                newBall();
-            } else {
-                // Stop the game loop
-                gameThread.interrupt(); // Interrupt the game thread to stop the loop
-                
-                // Schedule the window disposal outside of the event dispatch thread
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        dispose(); // Dispose current window
-                    }
-                });
-            }
-        }
-    }
-
-    public class ActionListener extends KeyAdapter{
+    class ActionListener extends KeyAdapter{
         public void keyPressed(KeyEvent e) {
             paddle1.keyPressed(e);
             paddle2.keyPressed(e);
