@@ -69,7 +69,7 @@ public class MainMenu extends JFrame{
         rulesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Handle rules action
-                JOptionPane.showMessageDialog(MainMenu.this, "Classic: Classic pong. Players volley the ball back and forth, with the ball moving faster after every return. A player wins when they score 7 points.\n Rally: Rally pong.  Get the highest score by rallying between you and your opponent.\n Castle Defense: Defend your Castle!  Each brick can take one hit, but once the ball hits your edge it's game over.", "Game Rules", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(MainMenu.this, "Classic: Classic pong. Players volley the ball back and forth, with the ball moving faster after every return. A player wins when they score 3 points but have to win by 2 points.\n Rally: Rally pong.  Get the highest score by rallying between you and your opponent.\n Castle Defense: Defend your Castle!  Each brick can take one hit, but once the ball hits your edge it's game over.", "Game Rules", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
@@ -93,7 +93,7 @@ public class MainMenu extends JFrame{
     public Leaderboard getLeaderboard() {
         return leaderboard;
     }
-    
+
     private void showLeaderboard() {
         HashMap<String, Integer> highScores = leaderboard.getAllHighScores();
         StringBuilder leaderboardText = new StringBuilder("Leaderboard:\n");
