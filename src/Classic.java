@@ -14,7 +14,7 @@ public class Classic extends JFrame {
     static final int BALL_DIAMETER = 20;
     static final int PADDLE_WIDTH = 25;
     static final int PADDLE_HEIGHT = 100;
-    static final int WINNING_SCORE = 7; // Define the winning score
+    static final int WINNING_SCORE = 3; // Define the winning score
     private Leaderboard leaderboard;
     
     Random random;
@@ -83,6 +83,7 @@ public class Classic extends JFrame {
 
     public void checkWinner() {
         if (score.player1 >= WINNING_SCORE || score.player2 >= WINNING_SCORE) {
+            if (Math.abs(score.player1 - score.player2) >= 2){
             String winner = (score.player1 >= WINNING_SCORE) ? "Player 1" : "Player 2";
             playWinSound();
 
@@ -104,6 +105,7 @@ public class Classic extends JFrame {
             }
         }
     }
+}
 
     public void newBall() {
         random = new Random();
