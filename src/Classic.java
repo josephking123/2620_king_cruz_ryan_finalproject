@@ -99,7 +99,6 @@ public class Classic extends JFrame {
                 newPaddles();
                 newBall();
             } else {
-                // Stop the game loop and go back to the main menu
                 running = false;
                 dispose();
             }

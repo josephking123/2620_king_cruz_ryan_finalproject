@@ -7,14 +7,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-public class RallyMode extends JFrame implements Runnable{
+public class RallyMode extends JFrame {
+
     static final int GAME_WIDTH = 1000;
     static final int GAME_HEIGHT = (int)(GAME_WIDTH * (0.5555));
     static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH,GAME_HEIGHT);
     static final int BALL_DIAMETER = 20;
     static final int PADDLE_WIDTH = 25;
     static final int PADDLE_HEIGHT = 100;
-    Thread gameThread;
+
     Image image;
     Graphics graphics;
     Random random;
@@ -24,12 +25,12 @@ public class RallyMode extends JFrame implements Runnable{
     Score score;
     GamePanel panel;
     int rallyScore = 0;
-    MainMenu mainMenu; // Reference to the main menu
+    boolean running = true;
+   
     private Leaderboard leaderboard;
 
     RallyMode(Leaderboard leaderboard){
-        mainMenu = new MainMenu(); // Create a new instance of the main menu
-        panel = new GamePanel(mainMenu); // Pass the main menu instance to the game panel
+        panel = new GamePanel(); // Pass the main menu instance to the game panel
 
         this.add(panel);
         this.setTitle("Rally Game");
@@ -40,25 +41,22 @@ public class RallyMode extends JFrame implements Runnable{
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         this.leaderboard = leaderboard;
+
+        Thread gameThread = new Thread(new GameLoop());
+        gameThread.start();
     }
 
-    
-
-    public void run() {
-        //game loop
-        long lastTime = System.nanoTime();
-        double amountOfTicks =60.0;
-        double ns = 1000000000 / amountOfTicks;
-        double delta = 0;
-        while(true) {
-            long now = System.nanoTime();
-            delta += (now -lastTime)/ns;
-            lastTime = now;
-            if(delta >=1) {
+    class GameLoop implements Runnable {
+        public void run() {
+            while (running) { // Check the running flag
                 move();
                 checkCollision();
                 panel.repaint();
-                delta--;
+                try {
+                    Thread.sleep(16); // Cap the frame rate to approximately 60 fps
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -75,10 +73,7 @@ public class RallyMode extends JFrame implements Runnable{
 
     public class GamePanel extends JPanel {
 
-        private MainMenu mainMenu; // Reference to the main menu
-
-        GamePanel(MainMenu mainMenu){
-            this.mainMenu = mainMenu; // Save reference to the main menu
+        GamePanel(){
             newPaddles();
             newBall();
             score = new Score(GAME_WIDTH,GAME_HEIGHT);
@@ -86,11 +81,8 @@ public class RallyMode extends JFrame implements Runnable{
             this.addKeyListener(new ActionListener());
             this.setPreferredSize(SCREEN_SIZE);
             this.setBackground(Color.BLACK); // Set background color of JPanel to black
-
-            gameThread = new Thread(RallyMode.this);
-            gameThread.start();
         }
-
+    
         public void paintComponent(Graphics g) {
             // Paint the background color
             super.paintComponent(g);
@@ -102,7 +94,13 @@ public class RallyMode extends JFrame implements Runnable{
             paddle2.draw(g);
             ball.draw(g);
             g.drawLine(GAME_WIDTH/2, 0, GAME_WIDTH/2, GAME_HEIGHT);
-            //score.draw(g);
+    
+            // Draw combined score
+            Font font = new Font("Consolas", Font.BOLD, 50);
+            g.setFont(font);
+            g.setColor(Color.WHITE);
+            g.drawString("" + rallyScore, GAME_WIDTH/2 - 100, 50);
+    
             Toolkit.getDefaultToolkit().sync();
         }
     }
@@ -180,15 +178,8 @@ public class RallyMode extends JFrame implements Runnable{
             newPaddles();
             newBall();
         } else {
-            mainMenu.setVisible(true);
-            gameThread.interrupt();
-            
-            SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        dispose(); // Dispose current window
-                    }
-                });
+           running = false;
+           dispose();
         }
     }
 
