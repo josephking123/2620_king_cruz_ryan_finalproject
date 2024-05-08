@@ -2,7 +2,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 import javax.sound.sampled.*;
 import javax.swing.*;
@@ -27,7 +26,6 @@ public class Classic extends JFrame implements Runnable {
     GamePanel panel;
     MainMenu mainMenu; // Reference to the main menu
 
-    // Sound clips
     Clip paddleHitSound;
     Clip scoreSound;
     Clip winSound;

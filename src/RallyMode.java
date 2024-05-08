@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class RallyMode extends JFrame implements Runnable{
     static final int GAME_WIDTH = 1000;
@@ -179,10 +180,15 @@ public class RallyMode extends JFrame implements Runnable{
             newPaddles();
             newBall();
         } else {
-            // Generate a new main menu instance and dispose the current window
-            mainMenu = new MainMenu();
             mainMenu.setVisible(true);
-            dispose(); // Dispose current window
+            gameThread.interrupt();
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dispose(); // Dispose current window
+                    }
+                });
         }
     }
 
