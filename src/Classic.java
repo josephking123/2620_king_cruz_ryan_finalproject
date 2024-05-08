@@ -15,6 +15,7 @@ public class Classic extends JFrame {
     static final int PADDLE_WIDTH = 25;
     static final int PADDLE_HEIGHT = 100;
     static final int WINNING_SCORE = 7; // Define the winning score
+    private Leaderboard leaderboard;
     
     Random random;
     Paddle paddle1;
@@ -29,6 +30,7 @@ public class Classic extends JFrame {
     Clip winSound;
 
     Classic (){
+        leaderboard = new Leaderboard();
         panel = new GamePanel(); // Pass the main menu instance to the game panel
         this.add(panel);
         this.setTitle("Pong Game");
@@ -94,6 +96,7 @@ public class Classic extends JFrame {
                 running = false;
                 dispose();
             }
+            leaderboard.updateHighScore("Classic", Math.max(score.player1, score.player2));
         }
     }
 

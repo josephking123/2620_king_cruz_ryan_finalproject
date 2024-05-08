@@ -1,18 +1,24 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
 
 public class MainMenu extends JFrame{
 
     private JButton mode1Button, mode2Button, mode3Button, leaderboardButton, exitButton, rulesButton;
     private JLabel titleLabel;
     private JPanel mainPanel;
+    private Leaderboard leaderboard;
+
+    private Client client;
 
     public MainMenu() {
         setTitle("Ping Pong Game");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        leaderboard = new Leaderboard();
 
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -51,7 +57,7 @@ public class MainMenu extends JFrame{
 
         leaderboardButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Handle leaderboard action
+                showLeaderboard();
             }
         });
 
@@ -83,6 +89,15 @@ public class MainMenu extends JFrame{
 
 
         add(mainPanel);
+    }
+
+    private void showLeaderboard() {
+        HashMap<String, Integer> highScores = leaderboard.getAllHighScores();
+        StringBuilder leaderboardText = new StringBuilder("Leaderboard:\n");
+        for (String mode : highScores.keySet()) {
+            leaderboardText.append(mode).append(": ").append(highScores.get(mode)).append("\n");
+        }
+        JOptionPane.showMessageDialog(MainMenu.this, leaderboardText.toString(), "Leaderboard", JOptionPane.INFORMATION_MESSAGE);
     }
         public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
