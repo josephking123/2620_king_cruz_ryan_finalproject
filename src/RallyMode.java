@@ -1,5 +1,4 @@
 import java.util.Random;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -13,7 +12,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 public class RallyMode extends JFrame {
 
@@ -34,8 +32,9 @@ public class RallyMode extends JFrame {
     GamePanel panel;
     int rallyScore = 0;
     boolean running = true;
-    Clip paddleHitSound;
-    Clip winSound;
+
+    SoundPlayer paddleHitSound;
+    SoundPlayer endSound;
    
     private Leaderboard leaderboard;
 
@@ -52,17 +51,8 @@ public class RallyMode extends JFrame {
         this.setLocationRelativeTo(null);
         this.leaderboard = leaderboard;
 
-        try {
-            paddleHitSound = AudioSystem.getClip();
-            AudioInputStream paddleHitStream = AudioSystem.getAudioInputStream(new File("lib\\Ball_Return.wav"));
-            paddleHitSound.open(paddleHitStream);
-
-            winSound = AudioSystem.getClip();
-            AudioInputStream winStream = AudioSystem.getAudioInputStream(new File("lib\\win.wav"));
-            winSound.open(winStream);
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            e.printStackTrace();
-        }
+        paddleHitSound = new SoundPlayer("lib\\Ball_Return.wav");
+        endSound = new SoundPlayer("lib\\rally_end.wav");
 
         Thread gameThread = new Thread(new GameLoop());
         gameThread.start();
@@ -70,12 +60,12 @@ public class RallyMode extends JFrame {
 
     class GameLoop implements Runnable {
         public void run() {
-            while (running) { // Check the running flag
+            while (running) { 
                 move();
                 checkCollision();
                 panel.repaint();
                 try {
-                    Thread.sleep(16); // Cap the frame rate to approximately 60 fps
+                    Thread.sleep(16); 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -153,8 +143,7 @@ public class RallyMode extends JFrame {
             ball.setXDirection(ball.xV);
             ball.setYDirection(ball.yV);
             score.player1++;
-            playPaddleHitSound();            
-
+            playPaddleSound();
         }
         if(ball.intersects(paddle2)) {
             ball.xV = Math.abs(ball.xV);
@@ -166,8 +155,7 @@ public class RallyMode extends JFrame {
             ball.setXDirection(-ball.xV);
             ball.setYDirection(ball.yV);
             score.player2++;
-            playPaddleHitSound();
-            
+            playPaddleSound();
         }
 
         rallyScore = score.player1 + score.player2;
@@ -187,13 +175,12 @@ public class RallyMode extends JFrame {
             finish();
         }
         if(ball.x >= GAME_WIDTH-BALL_DIAMETER) {
-            finish();
+            finish();  
         }
     }
 
     public void finish(){
-        playWinSound();
-        
+        playEndSound();
         leaderboard.updateHighScore("Rally", rallyScore);
         int choice = JOptionPane.showConfirmDialog(panel, "Final Score: " + rallyScore + " \n\nDo you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (choice == JOptionPane.YES_OPTION) {
@@ -220,18 +207,11 @@ public class RallyMode extends JFrame {
         }
     }
 
-    // Method to play paddle hit sound
-    public void playPaddleHitSound() {
-        if (paddleHitSound != null && !paddleHitSound.isRunning()) {
-            paddleHitSound.setFramePosition(0); // Rewind to the beginning
-            paddleHitSound.start(); // Play the sound
-        }
+    public void playPaddleSound() {
+        paddleHitSound.play();
     }
 
-    public void playWinSound() {
-        if (winSound != null && !winSound.isRunning()) {
-            winSound.setFramePosition(0); // Rewind to the beginning
-            winSound.start(); // Play the sound
-        }
+    public void playEndSound() {
+        endSound.play();
     }
 }
