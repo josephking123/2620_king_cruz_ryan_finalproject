@@ -174,8 +174,16 @@ public class CastleDefenseMode extends JFrame {
 
     public void finish() {
         playWinSound();
-
-        int choice = JOptionPane.showConfirmDialog(panel, "Final Score:  \n\nDo you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+    
+        int winner;
+        if (leftWallBroken) {
+            winner = 2; // Right player wins
+        } else {
+            winner = 1; // Left player wins
+        }
+    
+        String winnerMessage = "Player " + winner + " wins!";
+        int choice = JOptionPane.showConfirmDialog(panel, winnerMessage + "\n\nDo you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (choice == JOptionPane.YES_OPTION) {
             // Restart the game
             newPaddles();
@@ -188,7 +196,6 @@ public class CastleDefenseMode extends JFrame {
             dispose(); 
         }
     }
-
     public class ActionListener extends KeyAdapter {
         public void keyPressed(KeyEvent e) {
             paddle1.keyPressed(e);
