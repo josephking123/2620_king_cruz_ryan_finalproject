@@ -3,6 +3,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
 
+/**
+ * The Classic class represents the classic Pong game mode.
+ * It extends JFrame and provides the main game functionality.
+ */
 public class Classic extends JFrame {
 
     static final int GAME_WIDTH = 1000;
@@ -26,6 +30,10 @@ public class Classic extends JFrame {
     SoundPlayer scoreSound;
     SoundPlayer winSound;
 
+    /**
+     * Constructs a Classic object with the specified leaderboard.
+     * @param leaderboard The leaderboard to update scores.
+     */
     Classic(Leaderboard leaderboard) {
 
         panel = new GamePanel(); // Pass the main menu instance to the game panel
@@ -49,6 +57,9 @@ public class Classic extends JFrame {
         gameThread.start();
     }
 
+     /**
+     * The GameLoop class implements the game loop.
+     */
     class GameLoop implements Runnable {
         public void run() {
             while (running) { // Check the running flag
@@ -65,6 +76,9 @@ public class Classic extends JFrame {
         }
     }
 
+    /**
+     * Checks if there is a winner in the game.
+     */
     public void checkWinner() {
         if (score.player1 >= WINNING_SCORE || score.player2 >= WINNING_SCORE) {
             if (Math.abs(score.player1 - score.player2) >= 2) {
@@ -90,18 +104,30 @@ public class Classic extends JFrame {
         }
     }
 
+    /**
+     * Creates a new ball in the game.
+     */
     public void newBall() {
         random = new Random();
         ball = new Ball((GAME_WIDTH / 2) - (BALL_DIAMETER / 2), random.nextInt(GAME_HEIGHT - BALL_DIAMETER), BALL_DIAMETER, BALL_DIAMETER);
     }
 
+    /**
+     * Creates new paddles in the game.
+     */
     public void newPaddles() {
         paddle1 = new Paddle(0, (GAME_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_WIDTH, PADDLE_HEIGHT, 1);
         paddle2 = new Paddle(GAME_WIDTH - PADDLE_WIDTH, (GAME_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_WIDTH, PADDLE_HEIGHT, 2);
     }
 
+    /**
+     * The GamePanel class represents the panel where the game is drawn.
+     */
     class GamePanel extends JPanel {
 
+        /**
+         * Constructs a GamePanel object.
+         */
         GamePanel() {
             newPaddles();
             newBall();
@@ -112,12 +138,20 @@ public class Classic extends JFrame {
             this.setBackground(Color.BLACK); // Set background color of JPanel to black
         }
 
+        /**
+         * Paints the components of the panel.
+         * @param g The Graphics object used to paint.
+         */
         public void paintComponent(Graphics g) {
             // Paint the background color
             super.paintComponent(g);
             draw(g);
         }
 
+        /**
+         * Draws the game components.
+         * @param g The Graphics object used for drawing.
+         */
         public void draw(Graphics g) {
             paddle1.draw(g);
             paddle2.draw(g);
@@ -127,12 +161,18 @@ public class Classic extends JFrame {
         }
     }
 
+    /**
+     * Moves the game objects.
+     */
     public void move() {
         paddle1.move();
         paddle2.move();
         ball.move();
     }
 
+    /**
+     * Checks collision between game objects.
+     */
     public void checkCollision() {
 
         // bounce ball off top & bottom window edges
