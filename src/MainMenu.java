@@ -3,6 +3,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
 
+/**
+ * The MainMenu class represents the main menu of the Ping Pong Game.
+ * It allows the user to select different game modes, view the leaderboard, and exit the game.
+ */
+
 public class MainMenu extends JFrame{
 
     private JButton mode1Button, mode2Button, mode3Button, leaderboardButton, exitButton, rulesButton;
@@ -11,6 +16,10 @@ public class MainMenu extends JFrame{
     private Leaderboard leaderboard;
 
 
+    /**
+     * Constructs a new MainMenu object.
+     * Sets up the GUI components of the main menu.
+     */
     public MainMenu() {
         setTitle("Ping Pong Game");
         setSize(400, 300);
@@ -35,6 +44,10 @@ public class MainMenu extends JFrame{
         exitButton = new JButton("Exit");
         rulesButton = new JButton("Rules");
 
+        /*
+         * 
+         * Action Listeners for mode buttons
+         */
         mode1Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 @SuppressWarnings("unused")
@@ -93,10 +106,17 @@ public class MainMenu extends JFrame{
         add(mainPanel);
     }
 
+    /**
+     * Retrieves the leaderboard instance associated with the main menu.
+     * @return The leaderboard instance.
+     */
     public Leaderboard getLeaderboard() {
         return leaderboard;
     }
 
+    /**
+     * Displays the leaderboard in a dialog box.
+     */
     private void showLeaderboard() {
         HashMap<String, Integer> highScores = leaderboard.getAllHighScores();
         StringBuilder leaderboardText = new StringBuilder("Leaderboard:\n");
