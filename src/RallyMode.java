@@ -12,26 +12,26 @@ import javax.swing.JPanel;
  */
 public class RallyMode extends JFrame {
 
-    static final int GAME_WIDTH = 1000;
-    static final int GAME_HEIGHT = (int)(GAME_WIDTH * (0.5555));
-    static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH,GAME_HEIGHT);
-    static final int BALL_DIAMETER = 20;
-    static final int PADDLE_WIDTH = 25;
-    static final int PADDLE_HEIGHT = 100;
+    private static final int GAME_WIDTH = 1000;
+    private static final int GAME_HEIGHT = (int)(GAME_WIDTH * (0.5555));
+    private static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH,GAME_HEIGHT);
+    private static final int BALL_DIAMETER = 20;
+    private static final int PADDLE_WIDTH = 25;
+    private static final int PADDLE_HEIGHT = 100;
 
-    Image image;
-    Graphics graphics;
-    Random random;
-    Paddle paddle1;
-    Paddle paddle2;
-    Ball ball;
-    Score score;
-    GamePanel panel;
-    int rallyScore = 0;
-    boolean running = true;
+    private Image image;
+    private Graphics graphics;
+    private Random random;
+    private Paddle paddle1;
+    private Paddle paddle2;
+    private Ball ball;
+    private Score score;
+    private GamePanel panel;
+    private int rallyScore = 0;
+    private boolean running = true;
 
-    SoundPlayer paddleHitSound;
-    SoundPlayer endSound;
+    private SoundPlayer paddleHitSound;
+    private SoundPlayer endSound;
    
     private Leaderboard leaderboard;
 

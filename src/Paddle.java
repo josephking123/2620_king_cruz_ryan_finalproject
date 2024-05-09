@@ -7,9 +7,9 @@ import java.awt.event.*;
  */
 public class Paddle extends Rectangle{
 
-	int id;
-	int yV;
-	int speed = 10;
+	private int id;
+	private int yV;
+	private int speed = 10;
 	
 	/**
      * Constructs a Paddle object with the specified position, size, and identifier.

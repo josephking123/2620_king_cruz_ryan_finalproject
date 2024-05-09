@@ -9,20 +9,20 @@ import javax.swing.*;
  */
 public class GUI extends JFrame implements Runnable{
 
-    static final int GAME_WIDTH = 1000;
-    static final int GAME_HEIGHT = (int)(GAME_WIDTH * (0.5555));
-    static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH,GAME_HEIGHT);
-    static final int BALL_DIAMETER = 20;
-    static final int PADDLE_WIDTH = 25;
-    static final int PADDLE_HEIGHT = 100;
-    Thread gameThread;
-    Image image;
-    Graphics graphics;
-    Random random;
-    Paddle paddle1;
-    Paddle paddle2;
-    Ball ball;
-    Score score;
+    private static final int GAME_WIDTH = 1000;
+    private static final int GAME_HEIGHT = (int)(GAME_WIDTH * (0.5555));
+    private static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH,GAME_HEIGHT);
+    private static final int BALL_DIAMETER = 20;
+    private static final int PADDLE_WIDTH = 25;
+    private static final int PADDLE_HEIGHT = 100;
+    private Thread gameThread;
+    private Image image;
+    private Graphics graphics;
+    private Random random;
+    private Paddle paddle1;
+    private Paddle paddle2;
+    private Ball ball;
+    private Score score;
 
 
     /**
