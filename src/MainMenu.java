@@ -37,18 +37,21 @@ public class MainMenu extends JFrame{
 
         mode1Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                @SuppressWarnings("unused")
                 Classic classicPong = new Classic(leaderboard);
             }
         });
 
         mode2Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                @SuppressWarnings("unused")
                 RallyMode rallyPong = new RallyMode(leaderboard);
             }
         });
 
         mode3Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                @SuppressWarnings("unused")
                 CastleDefenseMode castlePong = new CastleDefenseMode();
             }
         });
@@ -69,7 +72,7 @@ public class MainMenu extends JFrame{
         rulesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Handle rules action
-                JOptionPane.showMessageDialog(MainMenu.this, "Classic: Classic pong. Players volley the ball back and forth, with the ball moving faster after every return. A player wins when they score 3 points but have to win by 2 points.\n Rally: Rally pong.  Get the highest score by rallying between you and your opponent.\n Castle Defense: Defend your Castle!  Each brick can take one hit, but once the ball hits your edge it's game over.", "Game Rules", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(MainMenu.this, "Classic: Classic pong. Players volley the ball back and forth, with the ball moving faster after every return. A player wins when they score 3 points but have to win by 2 points.\n Rally: Rally pong.  Get the highest score by rallying between you and your opponent.\n Castle Defense: Defend your Castle!  Each wall can take three hits, but once the ball hits your edge it's game over.", "Game Rules", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
