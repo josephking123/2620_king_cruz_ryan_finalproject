@@ -3,6 +3,10 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
+/**
+ * The GUI class represents the main graphical user interface for the Pong game.
+ * It extends the JFrame class and implements the Runnable interface to support multithreading.
+ */
 public class GUI extends JFrame implements Runnable{
 
     static final int GAME_WIDTH = 1000;
@@ -19,7 +23,12 @@ public class GUI extends JFrame implements Runnable{
     Paddle paddle2;
     Ball ball;
     Score score;
-    
+
+
+    /**
+     * Constructs a GUI object for the Pong game.
+     * Initializes the game elements, sets up the window, and starts the game thread.
+     */
     GUI(){
         newPaddles();
         newBall();
@@ -34,20 +43,34 @@ public class GUI extends JFrame implements Runnable{
         gameThread.start();
     }
     
+    /**
+     * Creates a new ball object with random initial position.
+     */
     public void newBall() {
         random = new Random();
         ball = new Ball((GAME_WIDTH/2)-(BALL_DIAMETER/2),random.nextInt(GAME_HEIGHT-BALL_DIAMETER),BALL_DIAMETER,BALL_DIAMETER);
     }
+
+    /**
+     * Creates new paddles for player 1 and player 2.
+     */
     public void newPaddles() {
         paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
         paddle2 = new Paddle(GAME_WIDTH-PADDLE_WIDTH,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
     }
 
+    /**
+     * The run method required by the Runnable interface.
+     * This method is executed when the game thread is started.
+     */
     @Override
     public void run() {
 
     }
     
+    /**
+     * ActionListener to handle keyboard input for controlling the paddles.
+     */
     public class ActionListener extends KeyAdapter{
         @Override
         public void keyPressed(KeyEvent e) {
