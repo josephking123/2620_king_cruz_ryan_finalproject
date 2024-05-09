@@ -1,10 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.Random;
-
-import javax.sound.sampled.*;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,15 +22,15 @@ public class CastleDefenseMode extends JFrame {
     Paddle paddle2;
     Ball ball;
     GamePanel panel;
-    MainMenu mainMenu; // Reference to the main menu
-    Clip paddleHitSound;
-    Clip winSound;
-    Clip wallHitSound;
     Wall leftWalls;
     Wall rightWalls;
     boolean leftWallBroken = false;
     boolean rightWallBroken = false;
     boolean running = true;
+
+    SoundPlayer paddleHitSound;
+    SoundPlayer wallBreakSound;
+    SoundPlayer winSound;
 
     CastleDefenseMode() {
 
@@ -49,22 +45,10 @@ public class CastleDefenseMode extends JFrame {
         this.setVisible(true);
         this.setLocationRelativeTo(null);
 
-        // Load sound files
-        try {
-            paddleHitSound = AudioSystem.getClip();
-            AudioInputStream paddleHitStream = AudioSystem.getAudioInputStream(new File("lib\\Ball_Return.wav"));
-            paddleHitSound.open(paddleHitStream);
-
-            winSound = AudioSystem.getClip();
-            AudioInputStream winStream = AudioSystem.getAudioInputStream(new File("lib\\win.wav"));
-            winSound.open(winStream);
-
-            wallHitSound = AudioSystem.getClip();
-            AudioInputStream wallHitStream = AudioSystem.getAudioInputStream(new File("lib\\BrickBreak.mp3"));
-            wallHitSound.open(wallHitStream);
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            e.printStackTrace();
-        }
+        paddleHitSound = new SoundPlayer("lib\\Ball_Return.wav");
+        wallBreakSound = new SoundPlayer("lib\\BrickBreak.wav");
+        winSound = new SoundPlayer("lib\\win.wav");
+       
 
         Thread gameThread = new Thread(new GameLoop());
         gameThread.start();
@@ -160,17 +144,17 @@ public class CastleDefenseMode extends JFrame {
         if (ball.intersects(leftWalls) && !leftWallBroken) {
             ball.setXDirection(-ball.xV);
             leftWalls.hit();
+            playWallHitSound();
             if (leftWalls.isBroken()) {
                 leftWallBroken = true;
-                playWallHitSound(); // Play wall hit sound
             }
         }
         if (ball.intersects(rightWalls) && !rightWallBroken) {
             ball.setXDirection(-ball.xV);
             rightWalls.hit();
+            playWallHitSound();
             if (rightWalls.isBroken()) {
                 rightWallBroken = true;
-                playWallHitSound(); // Play wall hit sound
             }
         }
 
@@ -197,6 +181,8 @@ public class CastleDefenseMode extends JFrame {
             newPaddles();
             newBall();
             newWalls();
+            leftWallBroken = false;
+            rightWallBroken = false;
         } else {
             running = false;
             dispose(); 
@@ -216,23 +202,14 @@ public class CastleDefenseMode extends JFrame {
     }
 
     public void playPaddleHitSound() {
-        if (paddleHitSound != null && !paddleHitSound.isRunning()) {
-            paddleHitSound.setFramePosition(0); // Rewind to the beginning
-            paddleHitSound.start(); // Play the sound
-        }
+        paddleHitSound.play();
     }
 
     public void playWinSound() {
-        if (winSound != null && !winSound.isRunning()) {
-            winSound.setFramePosition(0); // Rewind to the beginning
-            winSound.start(); // Play the sound
-        }
+        winSound.play();
     }
 
     public void playWallHitSound() {
-        if (wallHitSound != null && !wallHitSound.isRunning()) {
-            wallHitSound.setFramePosition(0); // Rewind to the beginning
-            wallHitSound.start(); // Play the sound
-        }
+       wallBreakSound.play();
     }
 }
