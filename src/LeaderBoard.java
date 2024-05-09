@@ -1,6 +1,7 @@
 import java.util.HashMap;
 
 public class Leaderboard {
+
     private HashMap<String, Integer> highScores; // Map game mode names to high scores
 
     public Leaderboard() {
