@@ -22,6 +22,7 @@ public class CastleDefenseMode extends JFrame implements Runnable{
     static final int BALL_DIAMETER = 20;
     static final int PADDLE_WIDTH = 25;
     static final int PADDLE_HEIGHT = 100;
+    static final int WALL_HEIGHT = 200;
     Thread gameThread;
     Image image;
     Graphics graphics;
@@ -34,6 +35,8 @@ public class CastleDefenseMode extends JFrame implements Runnable{
     Clip paddleHitSound;
     Clip winSound;
     Clip wallHitSound;
+    Wall leftWalls;
+    Wall rightWalls;
 
     CastleDefenseMode(){
         mainMenu = new MainMenu(); // Create a new instance of the main menu
@@ -91,8 +94,14 @@ public class CastleDefenseMode extends JFrame implements Runnable{
     }
 
     public void newPaddles() {
-        paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
-        paddle2 = new Paddle(GAME_WIDTH-PADDLE_WIDTH,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
+        paddle1 = new Paddle(100,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
+        paddle2 = new Paddle(GAME_WIDTH-PADDLE_WIDTH - 100,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
+    }
+
+    public void newWalls(){
+        leftWalls = new Wall(0, (GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,WALL_HEIGHT,1);
+        rightWalls = new Wall(GAME_WIDTH-PADDLE_WIDTH,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,WALL_HEIGHT,2);
+        
     }
 
     public class GamePanel extends JPanel {
@@ -103,6 +112,7 @@ public class CastleDefenseMode extends JFrame implements Runnable{
             this.mainMenu = mainMenu; // Save reference to the main menu
             newPaddles();
             newBall();
+            newWalls();
             this.setFocusable(true);
             this.addKeyListener(new ActionListener());
             this.setPreferredSize(SCREEN_SIZE);
@@ -122,6 +132,8 @@ public class CastleDefenseMode extends JFrame implements Runnable{
             paddle1.draw(g);
             paddle2.draw(g);
             ball.draw(g);
+            leftWalls.draw(g);
+            rightWalls.draw(g);
             g.drawLine(GAME_WIDTH/2, 0, GAME_WIDTH/2, GAME_HEIGHT);
             //score.draw(g);
             Toolkit.getDefaultToolkit().sync();
