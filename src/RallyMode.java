@@ -5,6 +5,11 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+
+/**
+ * RallyMode is a game mode where players compete to hit a ball with paddles to increase their rally score.
+ * This class extends JFrame to create the game window.
+ */
 public class RallyMode extends JFrame {
 
     static final int GAME_WIDTH = 1000;
@@ -30,6 +35,11 @@ public class RallyMode extends JFrame {
    
     private Leaderboard leaderboard;
 
+    /**
+     * Constructor for RallyMode.
+     * Initializes game elements, sets up game window, and starts the game loop.
+     * @param leaderboard The leaderboard instance to update high scores.
+     */
     RallyMode(Leaderboard leaderboard){
         panel = new GamePanel(); // Pass the main menu instance to the game panel
 
@@ -50,6 +60,10 @@ public class RallyMode extends JFrame {
         gameThread.start();
     }
 
+    /**
+     * Runnable implementation to run the game loop.
+     * Moves game elements, checks for collisions, and repaints the game panel.
+     */
     class GameLoop implements Runnable {
         public void run() {
             while (running) { 
@@ -65,18 +79,32 @@ public class RallyMode extends JFrame {
         }
     }
 
+    /**
+     * Initialize a new ball at a random position within the game window.
+     */
     public void newBall() {
         random = new Random();
         ball = new Ball((GAME_WIDTH/2)-(BALL_DIAMETER/2),random.nextInt(GAME_HEIGHT-BALL_DIAMETER),BALL_DIAMETER,BALL_DIAMETER);
     }
 
+    /**
+     * Initialize new paddles for both players at predefined positions.
+     */
     public void newPaddles() {
         paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
         paddle2 = new Paddle(GAME_WIDTH-PADDLE_WIDTH,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
     }
 
+    /**
+     * JPanel subclass representing the game panel.
+     * Handles drawing game elements and keyboard input.
+     */
     public class GamePanel extends JPanel {
 
+        /**
+         * Constructor for GamePanel.
+         * Initializes game elements, sets focus for keyboard input, and sets panel size and background color.
+         */
         GamePanel(){
             newPaddles();
             newBall();
@@ -87,12 +115,20 @@ public class RallyMode extends JFrame {
             this.setBackground(Color.BLACK); // Set background color of JPanel to black
         }
     
+        /**
+         * Method for painting game elements on the panel.
+         * @param g The Graphics object to paint on.
+         */
         public void paintComponent(Graphics g) {
             // Paint the background color
             super.paintComponent(g);
             draw(g);
         }
         
+        /**
+         * Method for drawing game elements on the panel.
+         * @param g The Graphics object to draw on.
+         */
         public void draw(Graphics g) {
             paddle1.draw(g);
             paddle2.draw(g);
@@ -109,12 +145,18 @@ public class RallyMode extends JFrame {
         }
     }
 
+    /**
+     * Move game elements (paddles and ball) based on their current velocity.
+     */
     public void move() {
         paddle1.move();
         paddle2.move();
         ball.move();
     }
 
+     /**
+     * Check for collisions between game elements and handle them.
+     */
     public void checkCollision() {
 
         //bounce ball off top & bottom window edges
@@ -171,6 +213,9 @@ public class RallyMode extends JFrame {
         }
     }
 
+    /**
+     * Finish the game, update high score, and prompt for replay.
+     */
     public void finish(){
         playEndSound();
         leaderboard.updateHighScore("Rally", rallyScore);
@@ -188,6 +233,10 @@ public class RallyMode extends JFrame {
     }
 
 
+    /*
+     * Action Listeners for sound implementaion
+     * 
+     */
     public class ActionListener extends KeyAdapter{
         public void keyPressed(KeyEvent e) {
             paddle1.keyPressed(e);

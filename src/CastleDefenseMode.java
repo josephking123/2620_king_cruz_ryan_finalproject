@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+
 public class CastleDefenseMode extends JFrame {
 
     static final int GAME_WIDTH = 1000;
