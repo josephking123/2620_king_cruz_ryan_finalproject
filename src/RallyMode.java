@@ -1,11 +1,9 @@
 import java.util.Random;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 public class RallyMode extends JFrame {
 
@@ -26,6 +24,9 @@ public class RallyMode extends JFrame {
     GamePanel panel;
     int rallyScore = 0;
     boolean running = true;
+
+    SoundPlayer paddleHitSound;
+    SoundPlayer endSound;
    
     private Leaderboard leaderboard;
 
@@ -42,18 +43,21 @@ public class RallyMode extends JFrame {
         this.setLocationRelativeTo(null);
         this.leaderboard = leaderboard;
 
+        paddleHitSound = new SoundPlayer("lib\\Ball_Return.wav");
+        endSound = new SoundPlayer("lib\\rally_end.wav");
+
         Thread gameThread = new Thread(new GameLoop());
         gameThread.start();
     }
 
     class GameLoop implements Runnable {
         public void run() {
-            while (running) { // Check the running flag
+            while (running) { 
                 move();
                 checkCollision();
                 panel.repaint();
                 try {
-                    Thread.sleep(16); // Cap the frame rate to approximately 60 fps
+                    Thread.sleep(16); 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -131,8 +135,7 @@ public class RallyMode extends JFrame {
             ball.setXDirection(ball.xV);
             ball.setYDirection(ball.yV);
             score.player1++;
-            
-
+            playPaddleSound();
         }
         if(ball.intersects(paddle2)) {
             ball.xV = Math.abs(ball.xV);
@@ -144,7 +147,7 @@ public class RallyMode extends JFrame {
             ball.setXDirection(-ball.xV);
             ball.setYDirection(ball.yV);
             score.player2++;
-            
+            playPaddleSound();
         }
 
         rallyScore = score.player1 + score.player2;
@@ -164,11 +167,12 @@ public class RallyMode extends JFrame {
             finish();
         }
         if(ball.x >= GAME_WIDTH-BALL_DIAMETER) {
-            finish();
+            finish();  
         }
     }
 
     public void finish(){
+        playEndSound();
         leaderboard.updateHighScore("Rally", rallyScore);
         int choice = JOptionPane.showConfirmDialog(panel, "Final Score: " + rallyScore + " \n\nDo you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (choice == JOptionPane.YES_OPTION) {
@@ -193,5 +197,13 @@ public class RallyMode extends JFrame {
             paddle1.keyReleased(e);
             paddle2.keyReleased(e);
         }
+    }
+
+    public void playPaddleSound() {
+        paddleHitSound.play();
+    }
+
+    public void playEndSound() {
+        endSound.play();
     }
 }
