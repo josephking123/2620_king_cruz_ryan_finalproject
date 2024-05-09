@@ -1,29 +1,24 @@
-import java.util.Random;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class CastleDefenseMode extends JFrame implements Runnable{
+public class CastleDefenseMode extends JFrame {
 
     static final int GAME_WIDTH = 1000;
-    static final int GAME_HEIGHT = (int)(GAME_WIDTH * (0.5555));
-    static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH,GAME_HEIGHT);
+    static final int GAME_HEIGHT = (int) (GAME_WIDTH * (0.5555));
+    static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH, GAME_HEIGHT);
     static final int BALL_DIAMETER = 20;
     static final int PADDLE_WIDTH = 25;
     static final int PADDLE_HEIGHT = 100;
-    static final int WALL_HEIGHT = 200;
-    Thread gameThread;
+    static final int WALL_HEIGHT = GAME_HEIGHT; // Make wall height same as game height
+    
     Image image;
     Graphics graphics;
     Random random;
@@ -37,10 +32,13 @@ public class CastleDefenseMode extends JFrame implements Runnable{
     Clip wallHitSound;
     Wall leftWalls;
     Wall rightWalls;
+    boolean leftWallBroken = false;
+    boolean rightWallBroken = false;
+    boolean running = true;
 
-    CastleDefenseMode(){
-        mainMenu = new MainMenu(); // Create a new instance of the main menu
-        panel = new GamePanel(mainMenu); // Pass the main menu instance to the game panel
+    CastleDefenseMode() {
+
+        panel = new GamePanel(); // Pass the main menu instance to the game panel
 
         this.add(panel);
         this.setTitle("Defense Game");
@@ -67,75 +65,65 @@ public class CastleDefenseMode extends JFrame implements Runnable{
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
+
+        Thread gameThread = new Thread(new GameLoop());
+        gameThread.start();
     }
 
-    public void run() {
-        //game loop
-        long lastTime = System.nanoTime();
-        double amountOfTicks =60.0;
-        double ns = 1000000000 / amountOfTicks;
-        double delta = 0;
-        while(true) {
-            long now = System.nanoTime();
-            delta += (now -lastTime)/ns;
-            lastTime = now;
-            if(delta >=1) {
+    class GameLoop implements Runnable {
+        public void run() {
+            while (running) { // Check the running flag
                 move();
                 checkCollision();
                 panel.repaint();
-                delta--;
+                try {
+                    Thread.sleep(16); // Cap the frame rate to approximately 60 fps
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
     public void newBall() {
         random = new Random();
-        ball = new Ball((GAME_WIDTH/2)-(BALL_DIAMETER/2),random.nextInt(GAME_HEIGHT-BALL_DIAMETER),BALL_DIAMETER,BALL_DIAMETER);
+        ball = new Ball((GAME_WIDTH / 2) - (BALL_DIAMETER / 2), random.nextInt(GAME_HEIGHT - BALL_DIAMETER), BALL_DIAMETER, BALL_DIAMETER);
     }
 
     public void newPaddles() {
-        paddle1 = new Paddle(100,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
-        paddle2 = new Paddle(GAME_WIDTH-PADDLE_WIDTH - 100,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
+        paddle1 = new Paddle(100, (GAME_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_WIDTH, PADDLE_HEIGHT, 1);
+        paddle2 = new Paddle(GAME_WIDTH - PADDLE_WIDTH - 100, (GAME_HEIGHT / 2) - (PADDLE_HEIGHT / 2), PADDLE_WIDTH, PADDLE_HEIGHT, 2);
     }
 
-    public void newWalls(){
-        leftWalls = new Wall(0, (GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,WALL_HEIGHT,1);
-        rightWalls = new Wall(GAME_WIDTH-PADDLE_WIDTH,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,WALL_HEIGHT,2);
-        
+    public void newWalls() {
+        leftWalls = new Wall(0, 0, PADDLE_WIDTH, WALL_HEIGHT, 1); // Create left wall
+        rightWalls = new Wall(GAME_WIDTH - PADDLE_WIDTH, 0, PADDLE_WIDTH, WALL_HEIGHT, 2); // Create right wall
     }
 
     public class GamePanel extends JPanel {
 
-        private MainMenu mainMenu; // Reference to the main menu
-
-        GamePanel(MainMenu mainMenu){
-            this.mainMenu = mainMenu; // Save reference to the main menu
+        GamePanel() {
             newPaddles();
             newBall();
             newWalls();
             this.setFocusable(true);
             this.addKeyListener(new ActionListener());
             this.setPreferredSize(SCREEN_SIZE);
-            this.setBackground(Color.BLACK); // Set background color of JPanel to black
-
-            gameThread = new Thread(CastleDefenseMode.this);
-            gameThread.start();
+            this.setBackground(Color.BLACK); 
         }
 
         public void paintComponent(Graphics g) {
-            // Paint the background color
             super.paintComponent(g);
             draw(g);
         }
-        
+
         public void draw(Graphics g) {
             paddle1.draw(g);
             paddle2.draw(g);
             ball.draw(g);
-            leftWalls.draw(g);
-            rightWalls.draw(g);
-            g.drawLine(GAME_WIDTH/2, 0, GAME_WIDTH/2, GAME_HEIGHT);
-            //score.draw(g);
+            if (!leftWallBroken) leftWalls.draw(g);
+            if (!rightWallBroken) rightWalls.draw(g);
+            g.drawLine(GAME_WIDTH / 2, 0, GAME_WIDTH / 2, GAME_HEIGHT);
             Toolkit.getDefaultToolkit().sync();
         }
     }
@@ -147,92 +135,86 @@ public class CastleDefenseMode extends JFrame implements Runnable{
     }
 
     public void checkCollision() {
+        // bounce ball off top & bottom window edges
+        if (ball.y <= 0) {
+            ball.setYDirection(-ball.yV);
+        }
+        if (ball.y >= GAME_HEIGHT - BALL_DIAMETER) {
+            ball.setYDirection(-ball.yV);
+        }
 
-        //bounce ball off top & bottom window edges
-        if(ball.y <=0) {
-            ball.setYDirection(-ball.yV);
-        }
-        if(ball.y >= GAME_HEIGHT-BALL_DIAMETER) {
-            ball.setYDirection(-ball.yV);
-        }
-        //bounce ball off paddles
-        if(ball.intersects(paddle1)) {
-            ball.xV = Math.abs(ball.xV);
-            ball.xV++; //optional for more difficulty
-            if(ball.yV>0)
-                ball.yV++; //optional for more difficulty
-            else
-                ball.yV--;
-            ball.setXDirection(ball.xV);
+        // bounce ball off paddles
+        if (ball.intersects(paddle1)) {
+            ball.setXDirection(Math.abs(ball.xV));
+            ball.xV++;
             ball.setYDirection(ball.yV);
             playPaddleHitSound();
-            
-
         }
-        if(ball.intersects(paddle2)) {
-            ball.xV = Math.abs(ball.xV);
-            ball.xV++; //optional for more difficulty
-            if(ball.yV>0)
-                ball.yV++; //optional for more difficulty
-            else
-                ball.yV--;
+        if (ball.intersects(paddle2)) {
+            ball.setXDirection(-Math.abs(ball.xV));
+            ball.setYDirection(ball.yV);
+            playPaddleHitSound();
+        }
+
+        // bounce ball off walls
+        if (ball.intersects(leftWalls) && !leftWallBroken) {
             ball.setXDirection(-ball.xV);
-            ball.setYDirection(ball.yV);
-            playPaddleHitSound();
-            
+            leftWalls.hit();
+            if (leftWalls.isBroken()) {
+                leftWallBroken = true;
+                playWallHitSound(); // Play wall hit sound
+            }
+        }
+        if (ball.intersects(rightWalls) && !rightWallBroken) {
+            ball.setXDirection(-ball.xV);
+            rightWalls.hit();
+            if (rightWalls.isBroken()) {
+                rightWallBroken = true;
+                playWallHitSound(); // Play wall hit sound
+            }
         }
 
-       
+        // stops paddles at window edges
+        if (paddle1.y <= 0) paddle1.y = 0;
+        if (paddle1.y >= GAME_HEIGHT - PADDLE_HEIGHT) paddle1.y = GAME_HEIGHT - PADDLE_HEIGHT;
+        if (paddle2.y <= 0) paddle2.y = 0;
+        if (paddle2.y >= GAME_HEIGHT - PADDLE_HEIGHT) paddle2.y = GAME_HEIGHT - PADDLE_HEIGHT;
 
-        //stops paddles at window edges
-        if(paddle1.y<=0)
-            paddle1.y=0;
-        if(paddle1.y >= (GAME_HEIGHT-PADDLE_HEIGHT))
-            paddle1.y = GAME_HEIGHT-PADDLE_HEIGHT;
-        if(paddle2.y<=0)
-            paddle2.y=0;
-        if(paddle2.y >= (GAME_HEIGHT-PADDLE_HEIGHT))
-            paddle2.y = GAME_HEIGHT-PADDLE_HEIGHT;
-
-
-        if(ball.x <=0) {
+        if (leftWallBroken && ball.x <= 0) {
             finish();
         }
-        if(ball.x >= GAME_WIDTH-BALL_DIAMETER) {
+        if (rightWallBroken && ball.x >= GAME_WIDTH - BALL_DIAMETER) {
             finish();
         }
     }
 
-    public void finish(){
+    public void finish() {
         playWinSound();
 
         int choice = JOptionPane.showConfirmDialog(panel, "Final Score:  \n\nDo you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (choice == JOptionPane.YES_OPTION) {
             // Restart the game
-            
             newPaddles();
             newBall();
+            newWalls();
         } else {
-            // Generate a new main menu instance and dispose the current window
-            mainMenu = new MainMenu();
-            mainMenu.setVisible(true);
-            dispose(); // Dispose current window
+            running = false;
+            dispose(); 
         }
     }
 
-
-    public class ActionListener extends KeyAdapter{
+    public class ActionListener extends KeyAdapter {
         public void keyPressed(KeyEvent e) {
             paddle1.keyPressed(e);
             paddle2.keyPressed(e);
         }
+
         public void keyReleased(KeyEvent e) {
             paddle1.keyReleased(e);
             paddle2.keyReleased(e);
         }
     }
-    
-    // Method to play paddle hit sound
+
     public void playPaddleHitSound() {
         if (paddleHitSound != null && !paddleHitSound.isRunning()) {
             paddleHitSound.setFramePosition(0); // Rewind to the beginning
@@ -247,4 +229,10 @@ public class CastleDefenseMode extends JFrame implements Runnable{
         }
     }
 
+    public void playWallHitSound() {
+        if (wallHitSound != null && !wallHitSound.isRunning()) {
+            wallHitSound.setFramePosition(0); // Rewind to the beginning
+            wallHitSound.start(); // Play the sound
+        }
+    }
 }
